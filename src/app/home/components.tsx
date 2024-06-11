@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from 'next/link'
 import { ImageOptimizerCache } from "next/dist/server/image-optimizer";
+import ReactPaginate from 'react-paginate';
 
 
 
@@ -34,6 +35,23 @@ export function TitleBanner() {
         </div>
     );
 }
+export function Dropdown({optionArray, onChange}) {
+    const getDropdownOptions = 
+        optionArray.map(item => {
+            return (
+                    <option value={item.id}>
+                        {item.name}
+                    </option>
+            )
+        })
+    return (
+        <div className="grid grid-rows-1 justify-center">
+            <select onChange={onChange}>
+                {getDropdownOptions}
+            </select>
+        </div>
+    )
+}
 
 export function Form({id, placeholder, onKeyDown}) {
     return (
@@ -62,6 +80,8 @@ export function Form({id, placeholder, onKeyDown}) {
 
 export function SearchBar() {
     const [allChecked, setAllChecked] = useState([]);
+    const [filtersSelected, setFiltersSelected] = useState("pl_name");
+    const [orderSelected, setOrderSelected] = useState("desc");
     const [searchParams, setSearchParams] = useState({
         "categories": allChecked,
         "table": "pscomppars",
@@ -75,9 +95,9 @@ export function SearchBar() {
             setSearchParams({
                 "categories": [...allChecked, e.target.value],
                 "table": "pscomppars",
-                "flag": "sy_dist",
+                "flag": filtersSelected,
                 "filters": "<=4",
-                "order": "desc"
+                "order": orderSelected
             })
             console.log(searchParams);
         }
@@ -100,13 +120,37 @@ export function SearchBar() {
             </div>
         )
     })
+    function handleFilterChange(e) {
+        setFiltersSelected(e.target.value);
+        setSearchParams({
+            "categories": [...allChecked, e.target.value],
+            "table": "pscomppars",
+            "flag": filtersSelected,
+            "filters": "<=4",
+            "order": orderSelected
+        })
+    }
+    function handleOrderChange(e) {
+        setOrderSelected(e.target.value);
+        setSearchParams({
+            "categories": [...allChecked, e.target.value],
+            "table": "pscomppars",
+            "flag": filtersSelected,
+            "filters": "<=4",
+            "order": orderSelected
+        })
+    }
     return (
         <div>
             <ul>{filtersList}</ul>
+            <Dropdown optionArray={checkboxContent} onChange={handleFilterChange}/>
+            <Dropdown optionArray={order} onChange={handleOrderChange} />
             <HandleSearch params={searchParams}/>
         </div>
     )
 }
+
+
 
 
 function HandleSearch({params}) {
@@ -154,6 +198,7 @@ function HandleSearch({params}) {
             console.log("submit is now" + submit)
         }
     }
+    
     if (status == true) {
         localStorage.setItem("planet_name", input);
         console.log("the current planet is " + localStorage.getItem("planet_name"))
@@ -164,7 +209,7 @@ function HandleSearch({params}) {
                 onKeyDown={(e)=>{handleOnKeyDown(e)}}
                 />
                 <Link href='/overview' className="flex justify-center">{input}</Link>
-                <List data={details} categories={searchParams.categories} />
+                <PaginatedItems details={details} searchParams={searchParams} itemsPerPage={5} />
             </section>
         )
     }
@@ -181,6 +226,46 @@ function HandleSearch({params}) {
     }
 }
 
+function PaginatedItems({ details, searchParams, itemsPerPage }) {
+    // Here we use item offsets; we could also use page offsets
+    // following the API or data you're working with.
+    const [itemOffset, setItemOffset] = useState(0);
+  
+    // Simulate fetching items from another resources.
+    // (This could be items from props; or items loaded in a local state
+    // from an API endpoint with useEffect and useState)
+    const endOffset = itemOffset + itemsPerPage;
+    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+    const currentDetails = details.slice(itemOffset, endOffset);
+    const pageCount = Math.ceil(details.length / itemsPerPage);
+  
+    // Invoke when user click to request another page.
+    const handlePageClick = (event) => {
+      const newOffset = (event.selected * itemsPerPage) % details.length;
+      console.log(
+        `User requested page number ${event.selected}, which is offset ${newOffset}`
+      );
+      setItemOffset(newOffset);
+    };
+  
+    return (
+      <>
+        <List data={currentDetails} categories={searchParams.categories} />
+        <ReactPaginate className="grid grid-flow-col p-4 gap-x-5 text-blue-500 text-3xl rounded-full justify-center"
+          breakLabel="..."
+          nextLabel="Next>"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={pageCount}
+          previousLabel="<Previous"
+          activeClassName="border-4 bg-slate-200"
+          pageLinkClassName="p-5"
+          pageClassName="border-4"
+          renderOnZeroPageCount={null}
+        />
+      </>
+    );
+  }
 
 
 function PlanetCard({planet_name, headers}) {
@@ -291,5 +376,16 @@ const checkboxContent = [
     {
         "name": "Equilibrium Temperature (K)",
         "id": "pl_eqt"
+    }
+]
+
+const order = [
+    {
+        "name": "Ascending",
+        "id": "asc"
+    },
+    {
+        "name": "Descending",
+        "id": "desc"
     }
 ]

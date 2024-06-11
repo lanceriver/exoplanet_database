@@ -19,6 +19,7 @@ def construct_query(params):
     table = params["table"]
     flag = params["flag"]
     filters = params["filters"]
+    order = params["order"]
     i = 0
     try:
         base_link = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync?query=select+"
@@ -29,12 +30,17 @@ def construct_query(params):
                     i+=1
         base_link += "+from+"
         base_link += table
-        base_link += "+where+"
+        if (flag != ""):  
+            base_link += "+where+"
+            base_link += flag
+            base_link += "+"
+            for filter in filters:
+                base_link += filter
+                base_link += "+"
+        base_link += "+order+by+"
         base_link += flag
         base_link += "+"
-        for filter in filters:
-            base_link += filter
-            base_link += "+"
+        base_link += order
         base_link += "&format=json"
         response = requests.get(base_link)
     except Exception as err:
