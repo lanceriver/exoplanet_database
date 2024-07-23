@@ -79,65 +79,77 @@ export function Form({id, placeholder, onKeyDown}) {
 }
 
 export function SearchBar() {
-    const [allChecked, setAllChecked] = useState([]);
-    const [filtersSelected, setFiltersSelected] = useState("pl_name");
+    const [allChecked, setAllChecked] = useState(new Array(checkboxContent.length).fill(true));
+    const [selectedCategories, setSelectedCategories] = useState(checkboxContent.map(item => item.id));
+    const [filtersSelected, setFiltersSelected] = useState("sy_dist");
     const [orderSelected, setOrderSelected] = useState("desc");
     const [searchParams, setSearchParams] = useState({
-        "categories": allChecked,
+        "categories":selectedCategories,
         "table": "pscomppars",
         "flag": "sy_dist",
         "filters": "<=4",
         "order": "desc"
     })
-    function handleChange(e) {
+    function handleChange(e, position) {
+        const updatedAllChecked = allChecked.map((item, index) => index === position ? !item : item);
+        setAllChecked(() => updatedAllChecked);
+        console.log(allChecked);
+        console.log(selectedCategories);
         if (e.target.checked) {
-            setAllChecked([...allChecked, e.target.value]);
-            setSearchParams({
-                "categories": [...allChecked, e.target.value],
+            console.log("this is checked");
+            const updatedSelectedCategories = [...selectedCategories, e.target.value]
+            setSelectedCategories(() => updatedSelectedCategories);
+            setSearchParams(() => ({
+                "categories": updatedSelectedCategories,
                 "table": "pscomppars",
                 "flag": filtersSelected,
                 "filters": "<=4",
                 "order": orderSelected
-            })
+            }));
             console.log(searchParams);
         }
         else {
-            setAllChecked(allChecked.filter((item) => item !== e.target.value));
-            setSearchParams({
-                "categories": allChecked.filter((item) => item !== e.target.value),
+            console.log("this is unchecked");
+            const updatedSelectedCategories = selectedCategories.filter((item) => item !== e.target.value);
+            setSelectedCategories(() => updatedSelectedCategories);
+            setSearchParams(() => ({
+                "categories": updatedSelectedCategories,
                 "table": "pscomppars",
                 "flag": "sy_dist",
                 "filters": "<=4",
                 "order": "desc"
-            })
+            }));
             console.log(searchParams);
         }
     }
-    const filtersList = checkboxContent.map(item => {
+    const filtersList = checkboxContent.map((item, index) => {
         return (
             <div className="grid justify-center">
-                <span>{item.name}</span> <CheckBox value={item.id} onChange={handleChange} />
+                <span>{item.name}</span> <CheckBox value={item.id} onChange={(e) => handleChange(e, index)} checked={allChecked[index]}/>
+                {/* <Form id={item.id} placeholder={"Enter a max/min value"} onKeyDown={(e)=>{handleKeyDown(e)}}></Form> */}
             </div>
         )
     })
     function handleFilterChange(e) {
-        setFiltersSelected(e.target.value);
+        const updatedFiltersSelected = e.target.value;
+        setFiltersSelected(()=>updatedFiltersSelected);
         setSearchParams({
-            "categories": [...allChecked, e.target.value],
+            "categories": selectedCategories,
             "table": "pscomppars",
-            "flag": filtersSelected,
+            "flag": updatedFiltersSelected,
             "filters": "<=4",
             "order": orderSelected
         })
     }
     function handleOrderChange(e) {
-        setOrderSelected(e.target.value);
+        const updatedOrderSelected = e.target.value;
+        setOrderSelected(()=>updatedOrderSelected);
         setSearchParams({
-            "categories": [...allChecked, e.target.value],
+            "categories": selectedCategories,
             "table": "pscomppars",
             "flag": filtersSelected,
             "filters": "<=4",
-            "order": orderSelected
+            "order": updatedOrderSelected
         })
     }
     return (
@@ -145,15 +157,13 @@ export function SearchBar() {
             <ul>{filtersList}</ul>
             <Dropdown optionArray={checkboxContent} onChange={handleFilterChange}/>
             <Dropdown optionArray={order} onChange={handleOrderChange} />
-            <HandleSearch params={searchParams}/>
+            <p>{searchParams.categories}</p>
+            <HandleSearch params={searchParams} checked={allChecked}/>
         </div>
     )
 }
 
-
-
-
-function HandleSearch({params}) {
+function HandleSearch({params, checked}) {
     const [input, setInput] = useState(0);
     const [submit, setSubmit] = useState(false);
     const originalState = [];
@@ -186,7 +196,7 @@ function HandleSearch({params}) {
                 console.log(err);
             }
         }
-    },[searchParams])
+    },[searchParams, checked])
     function handleOnKeyDown(e) {
         if (e.key == "Enter") {
             e.preventDefault();
@@ -250,7 +260,6 @@ function PaginatedItems({ details, searchParams, itemsPerPage }) {
   
     return (
       <>
-        <List data={currentDetails} categories={searchParams.categories} />
         <ReactPaginate className="grid grid-flow-col p-4 gap-x-5 text-blue-500 text-3xl rounded-full justify-center"
           breakLabel="..."
           nextLabel="Next>"
@@ -263,6 +272,7 @@ function PaginatedItems({ details, searchParams, itemsPerPage }) {
           pageClassName="border-4"
           renderOnZeroPageCount={null}
         />
+        <List data={currentDetails} categories={searchParams.categories} />
       </>
     );
   }
@@ -334,10 +344,10 @@ function List({data, categories}) {
 export function SearchFilters() {
 }
 
-function CheckBox({value, onChange}) {
+function CheckBox({value, onChange, checked}) {
     return (
         <div>
-            <input type="checkbox" value={value} onChange={onChange}></input>
+            <input type="checkbox" value={value} onChange={onChange} checked={checked}></input>
         </div>
     )
 }
