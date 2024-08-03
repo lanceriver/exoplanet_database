@@ -53,7 +53,7 @@ export function Dropdown({optionArray, onChange}) {
     )
 }
 
-export function Form({id, placeholder, onKeyDown}) {
+export function Form({id, placeholder, onKeyDown, onClick}) {
     return (
         <div className="grid grid-rows-1 my-10 color-grey justify-center">
         <div>
@@ -65,7 +65,7 @@ export function Form({id, placeholder, onKeyDown}) {
             defaultValue=""
             onKeyDown={onKeyDown}
         />
-        <button id="searchQuerySubmit" type="submit" name="searchQuerySubmit">
+        <button id="searchQuerySubmit" type="submit" name="searchQuerySubmit" onClick={onClick}>
         <svg style={{ width: 24, height: 24 }} viewBox="0 0 24 24">
             <path
             fill="#666666"
@@ -157,7 +157,6 @@ export function SearchBar() {
             <ul>{filtersList}</ul>
             <Dropdown optionArray={checkboxContent} onChange={handleFilterChange}/>
             <Dropdown optionArray={order} onChange={handleOrderChange} />
-            <p>{searchParams.categories}</p>
             <HandleSearch params={searchParams} checked={allChecked}/>
         </div>
     )
@@ -200,13 +199,20 @@ function HandleSearch({params, checked}) {
     function handleOnKeyDown(e) {
         if (e.key == "Enter") {
             e.preventDefault();
-            setInput(e.target.value);
-            setSearchParams(params);
-            console.log("i have pressed enter")
-            console.log(params);
-            setSubmit(true);
-            console.log("submit is now" + submit)
+            submitParams(e);
         }
+    }
+    function handleClick(e) {
+        e.preventDefault();
+        submitParams(e);
+    }
+    function submitParams(e) {
+        setInput(e.target.value);
+        setSearchParams(params);
+        console.log("i have pressed enter")
+        console.log(params);
+        setSubmit(true);
+        console.log("submit is now" + submit)
     }
     
     if (status == true) {
@@ -217,6 +223,7 @@ function HandleSearch({params, checked}) {
                 <Form id={"Search"} 
                 placeholder={"Submit your search"}
                 onKeyDown={(e)=>{handleOnKeyDown(e)}}
+                onClick={(e)=>{handleClick(e)}}
                 />
                 <Link href='/overview' className="flex justify-center">{input}</Link>
                 <PaginatedItems details={details} searchParams={searchParams} itemsPerPage={5} />
@@ -229,6 +236,7 @@ function HandleSearch({params, checked}) {
                 <Form id={"Search"} 
                     placeholder={"Submit your search"}
                     onKeyDown={(e)=>{handleOnKeyDown(e)}}
+                    onClick={(e)=>{handleClick(e)}}
                 />
             </section>
             
@@ -368,7 +376,7 @@ const checkboxContent = [
         "id": "pl_name"
     },
     {
-        "name": "Distance (from Earth)",
+        "name": "Distance from Earth (parsecs)",
         "id": "sy_dist"
     },
     {
