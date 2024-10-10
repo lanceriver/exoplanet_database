@@ -3,7 +3,11 @@ import * as OIMO from 'oimo';
 import Body from '/physics.js';
 import { TextureLoader } from 'three';
 
-export const sunTexture = new THREE.TextureLoader().load('exoplanet_simulation\textures\sun-blasts-a-m66-flare.jpg');
+export const loader = new THREE.TextureLoader();
+export const sunTexture = loader.load('textures/sun.jpg');
+const earthTexture = loader.load('textures/earth.jpg');
+const mercuryTexture = loader.load('textures/mercury.jpeg');
+const venusTexture = loader.load('textures/venus.jpeg');
 
 export const scene = new THREE.Scene();
 export const global = new OIMO.World({ 
@@ -16,6 +20,8 @@ export const global = new OIMO.World({
     gravity: [0,0,0] 
 });
 
-export const Sun = new Body({x:0,y:0,z:0},{x:0,y:0,z:0},{x:0,y:0,z:0},20, 1.989e30, 0xFFE484);
-export const Earth = new Body({x:700, y:0, z:500},{x:0,y:0.0005,z:-300},{x:0,y:0,z:0}, 5, 5.9724e24, 0x0000FF);
+export const Sun = new Body({x:0,y:0,z:0},{x:0,y:0,z:0},{x:0,y:0,z:0},100, 1.989e30, 0xFFFF00, sunTexture);
+export const Mercury = new Body({x:300,y:0,z:0},{x:0,y:-700,z:0},{x:0,y:0,z:0},10, 1.989e23, 0xFFFFFF, mercuryTexture);
+export const Venus = new Body({x:-600,y:0,z:0}, {x:0,y:600,z:0},{x:0,y:0,z:0},18, 4.867e24, 0xFFFFFF, venusTexture);
+export const Earth = new Body({x:0, y:1500, z:0},{x:400,y:0,z:0},{x:0,y:0,z:0}, 20, 5.9724e24, 0xFFFFFF, earthTexture);
 export const gravitationalConstant = 6.67e-11;

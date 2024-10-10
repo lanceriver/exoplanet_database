@@ -1,10 +1,24 @@
 import * as THREE from 'three';
 import * as OIMO from 'oimo';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { AfterimagePass } from 'three/addons/postprocessing/AfterimagePass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import {scene, global, Sun, Earth} from '/variables.js'
+import { Mercury, Venus } from './variables';
 
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+let afterimagePass;
+
+const params = {
+
+	enable: true
+
+};
+
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 5000 );
 
 
 
@@ -27,7 +41,7 @@ light.position.copy(camera.position); //default; light shining from top
 light.castShadow = true; // default false
 camera.add( light );
 
-light.target(camera);
+
 /* const earthLight = new THREE.DirectionalLight( 0xffffff, 1);
 earthLight.position.set( 0.5, 0, 1 );
 scene.add(earthLight); */
@@ -35,9 +49,21 @@ scene.add(earthLight); */
 
 //Set up shadow properties for the light
 light.shadow.mapSize.width = 512; // default
-light.shadow.mapSize.height = 512; // default
+light.shadow.mapSize.height = 1024; // default
 light.shadow.camera.near = 0.5; // default
-light.shadow.camera.far = 500; // default */
+light.shadow.camera.far = 5000; // default */
+
+
+// Set up the post-processing composer
+const renderScene = new RenderPass(scene, camera);
+const composer = new EffectComposer(renderer);
+composer.addPass(renderScene);
+const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.1, 0.001);
+composer.addPass(bloomPass);
+// afterimagePass = new AfterimagePass();
+// composer.addPass( afterimagePass );
+// const outputPass = new OutputPass();
+// composer.addPass( outputPass );
 
 
 /* function initialiseBody(body) {
@@ -77,6 +103,7 @@ function animate() {
 	console.log(time);
 
 	console.info(scene.children)
+	composer.render();
 	completeFrame()
 	
 
@@ -86,11 +113,16 @@ function animate() {
 
 function completeFrame() {
 	Earth.update();
+	Mercury.update();
+	Venus.update();
     // update world
     global.step()
     // render this frame of our animation
-    renderer.render(scene, camera)
+    // renderer.render(scene, camera)
+	
+	
     // line up our next frame
 	
 }
-renderer.setAnimationLoop( animate );
+requestAnimationFrame(animate);
+// renderer.setAnimationLoop( animate );
