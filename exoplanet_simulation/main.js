@@ -8,7 +8,7 @@ import { AfterimagePass } from 'three/addons/postprocessing/AfterimagePass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
 import {scene, global, Sun, Earth} from '/variables.js'
-import { Mercury, Venus } from './variables';
+import { planetList } from './variables';
 
 let afterimagePass;
 
@@ -60,6 +60,9 @@ const composer = new EffectComposer(renderer);
 composer.addPass(renderScene);
 const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.1, 0.001);
 composer.addPass(bloomPass);
+
+scene.background = spaceTexture;
+
 // afterimagePass = new AfterimagePass();
 // composer.addPass( afterimagePass );
 // const outputPass = new OutputPass();
@@ -75,14 +78,16 @@ initialiseBody(sun);
 initialiseBody(earth); */
 /* earthLight.target = Earth; */
 
+for (const planet in planetList) {
+	planetList[planet].addEventListener("click", planet.onClick());
+};
 
-
-/* function rotateBody(body) {
+ function rotateBody(body) {
 	body.rotation.x += 0.05;
 	body.rotation.y += 0.05;
 	body.rotation.z += 0.05;
 }
- */
+ 
 /* const geometry = new THREE.SphereGeometry( 15, 32, 32 );
 const material = new THREE.MeshStandardMaterial( { color: 0xFFE484, roughness: 0.176 } );
 const sphere = new THREE.Mesh( geometry, material );
@@ -112,9 +117,11 @@ function animate() {
 
 
 function completeFrame() {
-	Earth.update();
-	Mercury.update();
-	Venus.update();
+	for (const planet in planetList) {
+		planetList[planet].update();
+		// controls.target = planetList[planet].onClick();
+		// controls.update();
+	}
     // update world
     global.step()
     // render this frame of our animation

@@ -22,6 +22,7 @@ export default class Body {
         this.sphere.castShadow = true; //default is false
         this.sphere.receiveShadow = false; //default
         this.sphere.position.set(this.position.x, this.position.y, this.position.z);
+        this.rotation = 0;
         scene.add(this.sphere);
         this.body = global.add({
             type: 'sphere',
@@ -69,6 +70,7 @@ export default class Body {
         const initialAccelerationScalar = GM/magnitude**3;
         this.initialVector.multiplyScalar(initialAccelerationScalar);
         this.acceleration = this.initialVector.clone();
+        this.rotation = 0.5;
        
     }
     calculateAcceleration() {
@@ -86,6 +88,11 @@ export default class Body {
 
         this.acceleration = this.unitVector.clone();
 
+    }
+    onClick() {
+        var target = new THREE.Vector3();
+        this.sphere.getWorldPosition(target);
+        return target;
     }
     update() {
         this.calculateNewPosition();
