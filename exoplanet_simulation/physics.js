@@ -36,7 +36,7 @@ export default class Body {
     }
     calculateNewPosition() {
         var timestep = 1/60;
-        console.log(this.time)
+        // console.log(this.time)
         if (this.time == 0) {
             this.calculateInitials();
             this.time += timestep;
@@ -46,11 +46,11 @@ export default class Body {
             this.lastAcceleration = this.acceleration.clone();
             this.position.add(this.velocity.clone().multiplyScalar(timestep));
             this.position.add(this.lastAcceleration.clone().multiplyScalar((1/2)*(timestep**2)));
-            console.log(this.position);
+            // console.log(this.position);
             this.calculateAcceleration();
             this.velocity.add(this.lastAcceleration.clone().multiplyScalar(1/2));
             this.velocity.add(this.acceleration.clone().multiplyScalar(timestep));
-            console.log(this.velocity);
+            // console.log(this.velocity);
             this.body.setPosition(this.position);
             
         }

@@ -7,7 +7,7 @@ export const loader = new THREE.TextureLoader();
 export const sunTexture = loader.load('textures/sun.jpg');
 const earthTexture = loader.load('textures/earth.jpg');
 const mercuryTexture = loader.load('textures/mercury.jpeg');
-const venusTexture = loader.load('textures/venus.jpeg');
+const venusTexture = loader.load('textures/venus.jpg');
 const marsTexture = loader.load('textures/mars.jpg');
 const jupiterTexture = loader.load('textures/jupiter.jpg');
 export const spaceTexture = loader.load('textures/space.jpg');
@@ -25,10 +25,10 @@ export const global = new OIMO.World({
 
 export const Sun = new Body({x:0,y:0,z:0},{x:0,y:0,z:0},{x:0,y:0,z:0},100, 1.989e30, 0xFFFF00, sunTexture);
 export const Mercury = new Body({x:300,y:0,z:0},{x:0,y:-700,z:0},{x:0,y:0,z:0},10, 1.989e23, 0xFFFFFF, mercuryTexture);
-export const Venus = new Body({x:-600,y:0,z:0}, {x:0,y:600,z:0},{x:0,y:0,z:0},18, 4.867e24, 0xFFFFFF, venusTexture);
-export const Earth = new Body({x:0, y:1500, z:0},{x:400,y:0,z:0},{x:0,y:0,z:0}, 20, 5.9724e24, 0xFFFFFF, earthTexture);
-export const Mars = new Body({x:0, y:2000, z:0},{x:300,y:0,z:0},{x:0,y:0,z:0},12, 6.39e23, 0xFFFFFF, marsTexture);
-export const Jupiter = new Body({x:0, y:3000, z:0},{x:200,y:0,z:0},{x:0,y:0,z:0},50, 1.898e27, 0xFFFFFF, jupiterTexture)
+export const Venus = new Body({x:600,y:0,z:0}, {x:0,y:-600,z:0},{x:0,y:0,z:0},18, 4.867e24, 0xFFFFFF, venusTexture);
+export const Earth = new Body({x:1500, y:0, z:0},{x:0,y:-400,z:0},{x:0,y:0,z:0}, 20, 5.9724e24, 0xFFFFFF, earthTexture);
+export const Mars = new Body({x:2000, y:0, z:0},{x:0,y:-300,z:0},{x:0,y:0,z:0},12, 6.39e23, 0xFFFFFF, marsTexture);
+export const Jupiter = new Body({x:3000, y:0, z:0},{x:0,y:-200,z:0},{x:0,y:0,z:0},50, 1.898e27, 0xFFFFFF, jupiterTexture)
 export const gravitationalConstant = 6.67e-11;
 
 
